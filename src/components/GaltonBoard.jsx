@@ -186,9 +186,9 @@ export default function GaltonBoard({ onBack }) {
       const mean = rows * probability
       const std = Math.sqrt(rows * probability * (1 - probability)) || 0.0001
       const scale = useDots ? dotStep : (geo.binAreaHeight * 0.94) / maxCount
-      const line = d3.line().x((d) => xAtLevel(d, rows))
+      const normalLine = d3.line().x((d) => xAtLevel(d, rows))
         .y((d) => geo.binAreaBottom - count * normalPDF(d, mean, std) * scale)
-      svg.select('.curve').attr('d', line(d3.range(0, rows + 0.001, rows / 80)))
+      svg.select('.curve').attr('d', normalLine(d3.range(0, rows + 0.001, rows / 80)))
     }
   }, [bins, count, probability, rows])
 

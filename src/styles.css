@@ -31,7 +31,7 @@ button, input { font:inherit; }
 .frac { display:inline-flex; flex-direction:column; align-items:center; font-size:.62em; line-height:1.15; margin:0 2px; font-style:normal; }
 .frac .num,.frac .den { padding:0 3px; white-space:nowrap; }
 .frac .num { border-bottom:1.4px solid var(--ink); padding-bottom:1px; }
-.exp { vertical-align:super; font-size:.6em; margin-left:1px; }
+.exp { align-self:flex-start; font-size:.6em; margin:.05em 0 0 1px; }
 .exp .frac { font-size:1em; }
 .readout { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-strong); border:1px solid var(--line-strong); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; }
 .readout .cell { background:var(--card); padding:11px 8px; text-align:center; }
