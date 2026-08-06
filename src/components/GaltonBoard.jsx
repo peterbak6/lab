@@ -32,7 +32,7 @@ function normalPDF(x, mean, std) {
   return (1 / (std * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mean) / std) ** 2)
 }
 
-export default function GaltonBoard({ onBack }) {
+export default function GaltonBoard() {
   const svgRef = useRef(null)
   const spawnTimer = useRef(null)
   const activeCount = useRef(0)
@@ -206,20 +206,8 @@ export default function GaltonBoard({ onBack }) {
     ? Math.sqrt(bins.reduce((sum, value, k) => sum + value * (k - observedMean) ** 2, 0) / count)
     : null
 
-  function back() {
-    stopSpawning()
-    onBack()
-  }
-
   return (
     <section>
-      <button className="back" onClick={back}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Examples
-      </button>
-      <h2 className="detail-title">Galton Board</h2>
       <p className="detail-sub">Each ball bounces off a row of pegs, going right with probability p at every peg. Drop enough of them and the bins fill in to trace out a normal curve.</p>
 
       <div className="chart-card">

@@ -62,19 +62,49 @@ function Examples({ onOpen }) {
 
 export default function App() {
   const [activeExample, setActiveExample] = useState(null)
+  const activeIndex = EXAMPLES.findIndex((example) => example.id === activeExample)
+  const previousExample = activeIndex > 0 ? EXAMPLES[activeIndex - 1] : null
+  const nextExample = activeIndex >= 0 && activeIndex < EXAMPLES.length - 1 ? EXAMPLES[activeIndex + 1] : null
+
+  const openIfReady = (example) => {
+    if (example?.status === 'ready') setActiveExample(example.id)
+  }
 
   return (
     <main className="app">
-      <header className="masthead">
-        <div>
-          <p className="eyebrow">Lab</p>
-          <h1>{activeExample === 'galton' ? 'Galton Board' : 'Examples'}</h1>
-        </div>
-        <div className="index">01 / {String(EXAMPLES.length).padStart(2, '0')}</div>
-      </header>
+      {activeExample ? (
+        <header className="masthead detail-masthead">
+          <div className="detail-meta">
+            <button className="home-button" onClick={() => setActiveExample(null)} aria-label="Back to all examples">
+              <span aria-hidden="true">⌂</span>
+            </button>
+            <p className="eyebrow">Lab</p>
+            <div className="index">{String(activeIndex + 1).padStart(2, '0')} / {String(EXAMPLES.length).padStart(2, '0')}</div>
+          </div>
+          <div className="example-nav">
+            <button className="example-step previous" aria-label={`Previous example${previousExample ? `: ${previousExample.title}` : ''}`} disabled={previousExample?.status !== 'ready'} onClick={() => openIfReady(previousExample)}>
+              <span className="nav-icon" aria-hidden="true">←</span>
+              <strong>{previousExample?.title || 'None'}</strong>
+            </button>
+            <h1>{EXAMPLES[activeIndex]?.title}</h1>
+            <button className="example-step next" aria-label={`Next example${nextExample ? `: ${nextExample.title}` : ''}`} disabled={nextExample?.status !== 'ready'} onClick={() => openIfReady(nextExample)}>
+              <span className="nav-icon" aria-hidden="true">→</span>
+              <strong>{nextExample?.title || 'None'}</strong>
+            </button>
+          </div>
+        </header>
+      ) : (
+        <header className="masthead">
+          <div>
+            <p className="eyebrow">Lab</p>
+            <h1>Examples</h1>
+          </div>
+          <div className="index">01 / {String(EXAMPLES.length).padStart(2, '0')}</div>
+        </header>
+      )}
 
       {activeExample === 'galton' ? (
-        <GaltonBoard onBack={() => setActiveExample(null)} />
+        <GaltonBoard />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
