@@ -44,6 +44,7 @@ button, input { font:inherit; }
 .needle-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:29px; font-weight:400; line-height:1; transform:rotate(-12deg); }
 .walk-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:28px; line-height:1; }
 .ant-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:25px; line-height:1; }
+.life-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:24px; line-height:1; }
 .detail-sub { font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; max-width:46ch; }
 .chart-card { background:var(--card); border:1px solid var(--line-strong); border-radius:var(--radius); padding:10px 8px 4px; box-shadow:var(--shadow); margin-bottom:4px; }
 #board { width:100%; height:auto; display:block; border-radius:8px; }
@@ -148,3 +149,19 @@ input[type='range']::-moz-range-thumb { width:16px; height:16px; border-radius:5
 .text-control input:focus,.select-control select:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft); }
 .text-control input[aria-invalid='true'] { border-color:var(--amber); }
 .input-error { display:block; margin-top:5px; color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:9px; }
+
+/* --- Conway's Game of Life --- */
+.life-chart-card { padding:10px 10px 5px; }
+#life-board { display:block; width:100%; height:auto; aspect-ratio:1; border-radius:8px; cursor:crosshair; touch-action:none; }
+.legend-dot.life-cell { background:var(--teal); }
+.legend-dot.life-birth { background:var(--amber); }
+.life-rules { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; overflow:hidden; margin:9px 0 18px; border:1px solid var(--line-strong); border-radius:var(--radius); background:var(--line-strong); }
+.life-rules div { display:flex; flex-direction:column; align-items:center; gap:3px; background:var(--card); padding:10px 5px; }
+.life-rules strong { color:var(--teal); font-family:'Fraunces',serif; font-size:17px; }
+.life-rules span { color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:.06em; text-transform:uppercase; }
+.life-status { font-size:10px !important; line-height:1.2; }
+.preset-row { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-bottom:21px; }
+.preset-button { border:1px solid var(--line-strong); border-radius:18px; background:var(--card); color:var(--teal); padding:8px 4px; font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:600; cursor:pointer; }
+.preset-button:active { transform:scale(.97); }
+.preset-button.random { background:var(--teal-soft); }
+.life-settings-label { margin-top:0; }
