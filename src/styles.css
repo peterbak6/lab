@@ -41,6 +41,7 @@ button, input { font:inherit; }
 .card p { font-size:13px; color:var(--ink-soft); margin:0; line-height:1.45; }
 .glyph { position:absolute; top:14px; right:14px; width:30px; height:30px; }
 .stone-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:24px; font-style:italic; line-height:1; }
+.needle-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:29px; font-weight:400; line-height:1; transform:rotate(-12deg); }
 .detail-sub { font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; max-width:46ch; }
 .chart-card { background:var(--card); border:1px solid var(--line-strong); border-radius:var(--radius); padding:10px 8px 4px; box-shadow:var(--shadow); margin-bottom:4px; }
 #board { width:100%; height:auto; display:block; border-radius:8px; }
@@ -100,3 +101,14 @@ input[type='range']::-moz-range-thumb { width:16px; height:16px; border-radius:5
 .stone-readout { margin-bottom:22px; }
 .btn:disabled { cursor:default; opacity:.55; }
 @media (max-width:390px) { .stone-formulas { grid-template-columns:1fr; } }
+
+/* --- Buffon's Needles simulation --- */
+.needle-chart-card { padding:10px 10px 5px; }
+#needle-board { display:block; width:100%; height:auto; overflow:hidden; border-radius:8px; }
+#needle-board .floor { fill:#FAFCFA; }
+#needle-board .floor-lines line { stroke:var(--line-strong); stroke-width:2; }
+#needle-board .needle { stroke-width:2; stroke-linecap:round; }
+#needle-board .needle.safe { stroke:var(--teal); }
+#needle-board .needle.crossing { stroke:var(--amber); stroke-width:2.4; }
+.legend-needle { width:15px; height:0; border-top:2px solid var(--teal); transform:rotate(-15deg); }
+.legend-needle.crossing { border-color:var(--amber); }

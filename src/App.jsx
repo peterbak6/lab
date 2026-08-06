@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import GaltonBoard from './components/GaltonBoard.jsx'
 import StoneThrowing from './components/StoneThrowing.jsx'
+import BuffonNeedles from './components/BuffonNeedles.jsx'
 
 const EXAMPLES = [
   {
@@ -13,6 +14,12 @@ const EXAMPLES = [
     id: 'stone',
     title: 'Monte Carlo Method',
     blurb: 'Throw random points into a circle and estimate π from the ratio that land inside.',
+    status: 'ready',
+  },
+  {
+    id: 'buffon',
+    title: 'Buffon’s Needles',
+    blurb: 'Drop randomly rotated needles across parallel lines and recover π from how often they cross.',
     status: 'ready',
   },
   {
@@ -31,6 +38,7 @@ const EXAMPLES = [
 
 function CardGlyph({ ready, id }) {
   if (ready && id === 'stone') return <span className="glyph stone-glyph" aria-hidden="true">π</span>
+  if (ready && id === 'buffon') return <span className="glyph needle-glyph" aria-hidden="true">╱</span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -115,6 +123,8 @@ export default function App() {
         <GaltonBoard />
       ) : activeExample === 'stone' ? (
         <StoneThrowing />
+      ) : activeExample === 'buffon' ? (
+        <BuffonNeedles />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
