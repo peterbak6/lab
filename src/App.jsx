@@ -6,6 +6,7 @@ import DrunkardsWalk from './components/DrunkardsWalk.jsx'
 import LangtonsAnt from './components/LangtonsAnt.jsx'
 import GameOfLife from './components/GameOfLife.jsx'
 import ChaosGame from './components/ChaosGame.jsx'
+import Sandpile from './components/Sandpile.jsx'
 
 const EXAMPLES = [
   {
@@ -51,6 +52,12 @@ const EXAMPLES = [
     status: 'ready',
   },
   {
+    id: 'sandpile',
+    title: 'Abelian Sandpile',
+    blurb: 'Drop grains at one point and watch local collapses organize themselves into a crystalline fractal.',
+    status: 'ready',
+  },
+  {
     id: 'binomial',
     title: 'Binomial Distribution',
     blurb: 'Coin flips and success counts. Coming soon.',
@@ -71,6 +78,7 @@ function CardGlyph({ ready, id }) {
   if (ready && id === 'langton') return <span className="glyph ant-glyph" aria-hidden="true">⌗</span>
   if (ready && id === 'life') return <span className="glyph life-glyph" aria-hidden="true">▦</span>
   if (ready && id === 'chaos') return <span className="glyph chaos-glyph" aria-hidden="true">△</span>
+  if (ready && id === 'sandpile') return <span className="glyph sand-glyph" aria-hidden="true">▧</span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -165,6 +173,8 @@ export default function App() {
         <GameOfLife />
       ) : activeExample === 'chaos' ? (
         <ChaosGame />
+      ) : activeExample === 'sandpile' ? (
+        <Sandpile />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
