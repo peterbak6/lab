@@ -1,11 +1,18 @@
 import { useState } from 'react'
 import GaltonBoard from './components/GaltonBoard.jsx'
+import StoneThrowing from './components/StoneThrowing.jsx'
 
 const EXAMPLES = [
   {
     id: 'galton',
     title: 'Galton Board',
     blurb: 'Drop balls through a peg triangle and watch pure chance build the normal curve, bin by bin.',
+    status: 'ready',
+  },
+  {
+    id: 'stone',
+    title: 'Monte Carlo Method',
+    blurb: 'Throw random points into a circle and estimate π from the ratio that land inside.',
     status: 'ready',
   },
   {
@@ -22,7 +29,8 @@ const EXAMPLES = [
   },
 ]
 
-function CardGlyph({ ready }) {
+function CardGlyph({ ready, id }) {
+  if (ready && id === 'stone') return <span className="glyph stone-glyph" aria-hidden="true">π</span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -49,7 +57,7 @@ function Examples({ onOpen }) {
             onClick={() => ready && onOpen(example.id)}
             disabled={!ready}
           >
-            <CardGlyph ready={ready} />
+            <CardGlyph ready={ready} id={example.id} />
             <span className="tag">{ready ? 'Interactive' : 'Soon'}</span>
             <h3>{example.title}</h3>
             <p>{example.blurb}</p>
@@ -105,6 +113,8 @@ export default function App() {
 
       {activeExample === 'galton' ? (
         <GaltonBoard />
+      ) : activeExample === 'stone' ? (
+        <StoneThrowing />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
