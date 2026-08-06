@@ -3,6 +3,7 @@ import GaltonBoard from './components/GaltonBoard.jsx'
 import StoneThrowing from './components/StoneThrowing.jsx'
 import BuffonNeedles from './components/BuffonNeedles.jsx'
 import DrunkardsWalk from './components/DrunkardsWalk.jsx'
+import LangtonsAnt from './components/LangtonsAnt.jsx'
 
 const EXAMPLES = [
   {
@@ -30,6 +31,12 @@ const EXAMPLES = [
     status: 'ready',
   },
   {
+    id: 'langton',
+    title: 'Langton’s Ant',
+    blurb: 'Give ants tiny turning rules and watch symmetry collapse into chaos, highways, and shared structures.',
+    status: 'ready',
+  },
+  {
     id: 'binomial',
     title: 'Binomial Distribution',
     blurb: 'Coin flips and success counts. Coming soon.',
@@ -47,6 +54,7 @@ function CardGlyph({ ready, id }) {
   if (ready && id === 'stone') return <span className="glyph stone-glyph" aria-hidden="true">π</span>
   if (ready && id === 'buffon') return <span className="glyph needle-glyph" aria-hidden="true">╱</span>
   if (ready && id === 'walk') return <span className="glyph walk-glyph" aria-hidden="true">⌁</span>
+  if (ready && id === 'langton') return <span className="glyph ant-glyph" aria-hidden="true">⌗</span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -135,6 +143,8 @@ export default function App() {
         <BuffonNeedles />
       ) : activeExample === 'walk' ? (
         <DrunkardsWalk />
+      ) : activeExample === 'langton' ? (
+        <LangtonsAnt />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}

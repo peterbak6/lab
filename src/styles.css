@@ -43,6 +43,7 @@ button, input { font:inherit; }
 .stone-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:24px; font-style:italic; line-height:1; }
 .needle-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:29px; font-weight:400; line-height:1; transform:rotate(-12deg); }
 .walk-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:28px; line-height:1; }
+.ant-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:25px; line-height:1; }
 .detail-sub { font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; max-width:46ch; }
 .chart-card { background:var(--card); border:1px solid var(--line-strong); border-radius:var(--radius); padding:10px 8px 4px; box-shadow:var(--shadow); margin-bottom:4px; }
 #board { width:100%; height:auto; display:block; border-radius:8px; }
@@ -128,3 +129,22 @@ input[type='range']::-moz-range-thumb { width:16px; height:16px; border-radius:5
 .legend-dot.walk-cloud { background:var(--teal); }
 .legend-path { width:15px; height:0; border-top:2px solid var(--amber); }
 .legend-ring { width:15px; height:8px; border:1px dashed var(--amber); border-radius:50%; }
+
+/* --- Langton's Ant simulation --- */
+.ant-chart-card { padding:10px; }
+#ant-board { display:block; width:100%; height:auto; aspect-ratio:1; border-radius:8px; }
+.ant-phase { display:flex; align-items:baseline; justify-content:space-between; padding:8px 3px 1px; border-top:1px solid var(--line); font-family:'IBM Plex Mono',monospace; }
+.ant-phase span { color:var(--ink-faint); font-size:8.5px; letter-spacing:.08em; text-transform:uppercase; }
+.ant-phase strong { color:var(--teal); font-size:10px; }
+.rule-strip { display:flex; justify-content:center; gap:7px; overflow-x:auto; padding:11px 2px 17px; }
+.rule-strip div { display:grid; grid-template-columns:13px auto; grid-template-rows:auto auto; align-items:center; column-gap:4px; min-width:34px; font-family:'IBM Plex Mono',monospace; }
+.rule-strip i { grid-row:1 / 3; width:13px; height:28px; border:1px solid rgba(27,36,31,.12); border-radius:4px; }
+.rule-strip span { color:var(--ink-faint); font-size:8px; }
+.rule-strip strong { color:var(--ink); font-size:13px; line-height:1; }
+.ant-run-row .btn { min-width:0; }
+.checkpoint-note { margin:-11px 0 20px; padding:8px 10px; border-radius:8px; background:var(--amber-soft); color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:9px; line-height:1.45; text-align:center; }
+.text-control,.select-control { display:block; margin-bottom:20px; }
+.text-control input,.select-control select { width:100%; border:1px solid var(--line-strong); border-radius:10px; outline:none; background:var(--card); color:var(--ink); padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; }
+.text-control input:focus,.select-control select:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft); }
+.text-control input[aria-invalid='true'] { border-color:var(--amber); }
+.input-error { display:block; margin-top:5px; color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:9px; }
