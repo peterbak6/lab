@@ -42,6 +42,7 @@ button, input { font:inherit; }
 .glyph { position:absolute; top:14px; right:14px; width:30px; height:30px; }
 .stone-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:24px; font-style:italic; line-height:1; }
 .needle-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:29px; font-weight:400; line-height:1; transform:rotate(-12deg); }
+.walk-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:28px; line-height:1; }
 .detail-sub { font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; max-width:46ch; }
 .chart-card { background:var(--card); border:1px solid var(--line-strong); border-radius:var(--radius); padding:10px 8px 4px; box-shadow:var(--shadow); margin-bottom:4px; }
 #board { width:100%; height:auto; display:block; border-radius:8px; }
@@ -112,3 +113,18 @@ input[type='range']::-moz-range-thumb { width:16px; height:16px; border-radius:5
 #needle-board .needle.crossing { stroke:var(--amber); stroke-width:2.4; }
 .legend-needle { width:15px; height:0; border-top:2px solid var(--teal); transform:rotate(-15deg); }
 .legend-needle.crossing { border-color:var(--amber); }
+
+/* --- Drunkard's Walk simulation --- */
+.walk-chart-card { padding:10px 10px 5px; }
+#walk-board { display:block; width:100%; height:auto; overflow:hidden; border-radius:8px; }
+#walk-board .walk-field { fill:#FAFCFA; }
+#walk-board .walk-grid line { stroke:var(--line); stroke-width:1; }
+#walk-board .walk-grid line.axis { stroke:var(--line-strong); stroke-width:1.4; }
+#walk-board .rms-ring { fill:none; stroke:var(--amber); stroke-width:1.5; stroke-dasharray:4 4; }
+#walk-board .walk-endpoint { fill:var(--teal); }
+#walk-board .latest-path { fill:none; stroke:var(--amber); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; opacity:.78; }
+#walk-board .walk-origin { fill:var(--ink); stroke:var(--card); stroke-width:1.5; }
+#walk-board .latest-end { fill:var(--amber); stroke:var(--card); stroke-width:1.5; }
+.legend-dot.walk-cloud { background:var(--teal); }
+.legend-path { width:15px; height:0; border-top:2px solid var(--amber); }
+.legend-ring { width:15px; height:8px; border:1px dashed var(--amber); border-radius:50%; }

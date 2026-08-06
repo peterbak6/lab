@@ -2,6 +2,7 @@ import { useState } from 'react'
 import GaltonBoard from './components/GaltonBoard.jsx'
 import StoneThrowing from './components/StoneThrowing.jsx'
 import BuffonNeedles from './components/BuffonNeedles.jsx'
+import DrunkardsWalk from './components/DrunkardsWalk.jsx'
 
 const EXAMPLES = [
   {
@@ -23,6 +24,12 @@ const EXAMPLES = [
     status: 'ready',
   },
   {
+    id: 'walk',
+    title: 'The Drunkard’s Walk',
+    blurb: 'Send thousands of walkers from one lamppost and watch chaotic paths form a normal cloud.',
+    status: 'ready',
+  },
+  {
     id: 'binomial',
     title: 'Binomial Distribution',
     blurb: 'Coin flips and success counts. Coming soon.',
@@ -39,6 +46,7 @@ const EXAMPLES = [
 function CardGlyph({ ready, id }) {
   if (ready && id === 'stone') return <span className="glyph stone-glyph" aria-hidden="true">π</span>
   if (ready && id === 'buffon') return <span className="glyph needle-glyph" aria-hidden="true">╱</span>
+  if (ready && id === 'walk') return <span className="glyph walk-glyph" aria-hidden="true">⌁</span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -125,6 +133,8 @@ export default function App() {
         <StoneThrowing />
       ) : activeExample === 'buffon' ? (
         <BuffonNeedles />
+      ) : activeExample === 'walk' ? (
+        <DrunkardsWalk />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
