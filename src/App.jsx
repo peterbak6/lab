@@ -155,7 +155,7 @@ export default function App() {
             <button className="home-button" onClick={() => setActiveExample(null)} aria-label="Back to all examples">
               <span aria-hidden="true">⌂</span>
             </button>
-            <p className="eyebrow">Lab</p>
+            <p className="eyebrow">PhenoVis</p>
             <div className="index">{String(activeIndex + 1).padStart(2, '0')} / {String(EXAMPLES.length).padStart(2, '0')}</div>
           </div>
           <div className="example-nav">
@@ -173,7 +173,7 @@ export default function App() {
       ) : (
         <header className="masthead">
           <div>
-            <p className="eyebrow">Lab</p>
+            <p className="eyebrow">PhenoVis</p>
             <h1>Examples</h1>
           </div>
           <div className="index">01 / {String(EXAMPLES.length).padStart(2, '0')}</div>
