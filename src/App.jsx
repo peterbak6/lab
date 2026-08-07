@@ -8,6 +8,7 @@ import GameOfLife from './components/GameOfLife.jsx'
 import ChaosGame from './components/ChaosGame.jsx'
 import SimpsonsParadox from './components/SimpsonsParadox.jsx'
 import BerksonsParadox from './components/BerksonsParadox.jsx'
+import SurvivorshipBias from './components/SurvivorshipBias.jsx'
 
 const EXAMPLES = [
   {
@@ -71,6 +72,13 @@ const EXAMPLES = [
     title: 'Berkson’s Paradox',
     blurb: 'This demonstration shows how selecting on a shared outcome creates a false negative correlation between independent traits.',
     topics: ['Statistics', 'Correlation', 'Bias', 'Probability'],
+    status: 'ready',
+  },
+  {
+    id: 'survivor',
+    title: 'Survivorship Bias',
+    blurb: 'This demonstration shows how missing failed cases can make the safest aircraft regions appear to need the most protection.',
+    topics: ['Statistics', 'Bias', 'Probability', 'Engineering'],
     status: 'ready',
   },
   {
@@ -190,6 +198,8 @@ export default function App() {
         <SimpsonsParadox />
       ) : activeExample === 'berkson' ? (
         <BerksonsParadox />
+      ) : activeExample === 'survivor' ? (
+        <SurvivorshipBias />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}
