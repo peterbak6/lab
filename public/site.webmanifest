@@ -1,0 +1,14 @@
+{
+  "name": "PhenoVis",
+  "short_name": "PhenoVis",
+  "description": "Interactive visual explanations of mathematics, physics, probability, patterns, and emergence.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7F5",
+  "theme_color": "#14615C",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
