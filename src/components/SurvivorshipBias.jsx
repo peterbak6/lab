@@ -3,132 +3,155 @@ import * as d3 from 'd3'
 import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const WIDTH = 320
-const HEIGHT = 300
-const FLEET_SIZE = 120
-const DEFAULTS = { holes: 1800, engineFragility: 0.95, bodyFragility: 0.05 }
-const OUTLINE = [[47, 5], [53, 5], [57, 34], [91, 47], [91, 56], [58, 55], [57, 76], [70, 85], [70, 92], [54, 88], [50, 98], [46, 88], [30, 92], [30, 85], [43, 76], [42, 55], [9, 56], [9, 47], [43, 34]]
+const HEIGHT = 270
+const MARGIN = { top: 14, right: 14, bottom: 38, left: 42 }
+const HOUSE_COUNT = 500
+const DEFAULTS = { goodRate: 0.15, goodDays: 7, badDays: 23, windowDays: 90 }
 
-function inEllipse(x, y, cx, cy, rx, ry) {
-  return ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1
+function exponential(mean) {
+  return -mean * Math.log(1 - Math.random())
 }
 
-function zoneAt(x, y) {
-  const cockpit = inEllipse(x, y, 50, 20, 5.5, 10)
-  const leftEngine = inEllipse(x, y, 34, 51, 6.5, 10)
-  const rightEngine = inEllipse(x, y, 66, 51, 6.5, 10)
-  return cockpit || leftEngine || rightEngine ? 'critical' : 'body'
-}
-
-function randomPlanePoint() {
-  let point
-  do point = [9 + Math.random() * 82, 5 + Math.random() * 93]
-  while (!d3.polygonContains(OUTLINE, point))
-  return point
-}
-
-function simulateMission(holes, engineFragility, bodyFragility) {
-  const planes = d3.range(FLEET_SIZE).map((id) => ({ id, crashed: false }))
-  const hits = d3.range(holes).map((id) => {
-    const [x, y] = randomPlanePoint()
-    const zone = zoneAt(x, y)
-    const plane = Math.floor(Math.random() * FLEET_SIZE)
-    const fatal = Math.random() < (zone === 'critical' ? engineFragility : bodyFragility)
-    if (fatal) planes[plane].crashed = true
-    return { id, x, y, zone, plane, fatal }
+function makeMarket({ goodRate, goodDays, badDays, windowDays }) {
+  return d3.range(HOUSE_COUNT).map((id) => {
+    const good = Math.random() < goodRate
+    const listingDay = Math.random() * windowDays
+    const age = windowDays - listingDay
+    const duration = exponential(good ? goodDays : badDays)
+    return {
+      id,
+      good,
+      quality: good ? 75 + Math.random() * 25 : 10 + Math.random() * 55,
+      listingDay,
+      age,
+      duration,
+      active: duration >= age,
+    }
   })
-  return { planes, hits, settings: { holes, engineFragility, bodyFragility } }
+}
+
+function regression(houses) {
+  if (houses.length < 2) return { slope: 0, intercept: 50 }
+  const meanX = d3.mean(houses, (house) => house.age)
+  const meanY = d3.mean(houses, (house) => house.quality)
+  const numerator = d3.sum(houses, (house) => (house.age - meanX) * (house.quality - meanY))
+  const denominator = d3.sum(houses, (house) => (house.age - meanX) ** 2)
+  const slope = denominator ? numerator / denominator : 0
+  return { slope, intercept: meanY - slope * meanX }
 }
 
 export default function SurvivorshipBias() {
   const svgRef = useRef(null)
-  const [holes, setHoles] = useState(DEFAULTS.holes)
-  const [engineFragility, setEngineFragility] = useState(DEFAULTS.engineFragility)
-  const [bodyFragility, setBodyFragility] = useState(DEFAULTS.bodyFragility)
-  const [view, setView] = useState('survivors')
-  const [mission, setMission] = useState(() => simulateMission(DEFAULTS.holes, DEFAULTS.engineFragility, DEFAULTS.bodyFragility))
+  const [goodRate, setGoodRate] = useState(DEFAULTS.goodRate)
+  const [goodDays, setGoodDays] = useState(DEFAULTS.goodDays)
+  const [badDays, setBadDays] = useState(DEFAULTS.badDays)
+  const [windowDays, setWindowDays] = useState(DEFAULTS.windowDays)
+  const [view, setView] = useState('active')
+  const settings = useMemo(() => ({ goodRate, goodDays, badDays, windowDays }), [badDays, goodDays, goodRate, windowDays])
+  const [market, setMarket] = useState(() => makeMarket(DEFAULTS))
 
-  const crashedIds = useMemo(() => new Set(mission.planes.filter((plane) => plane.crashed).map((plane) => plane.id)), [mission])
-  const visibleHits = useMemo(
-    () => view === 'all' ? mission.hits : mission.hits.filter((hit) => !crashedIds.has(hit.plane)),
-    [crashedIds, mission, view],
-  )
-  const survivors = mission.planes.length - crashedIds.size
-  const survivorCriticalHits = mission.hits.filter((hit) => !crashedIds.has(hit.plane) && hit.zone === 'critical').length
-  const survivorBodyHits = mission.hits.filter((hit) => !crashedIds.has(hit.plane) && hit.zone === 'body').length
+  useEffect(() => {
+    setMarket(makeMarket(settings))
+    setView('active')
+  }, [settings])
+
+  const active = useMemo(() => market.filter((house) => house.active), [market])
+  const sold = useMemo(() => market.filter((house) => !house.active), [market])
+  const activeLine = useMemo(() => regression(active), [active])
+  const flowLine = useMemo(() => regression(market), [market])
+  const visible = view === 'active' ? active : market
+  const activeGood = active.filter((house) => house.good).length
+  const totalGood = market.filter((house) => house.good).length
+  const activeGoodRate = active.length ? activeGood / active.length : 0
+  const observedFlowRate = market.length ? totalGood / market.length : 0
 
   useEffect(() => {
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
-    const x = d3.scaleLinear().domain([0, 100]).range([18, WIDTH - 18])
-    const y = d3.scaleLinear().domain([0, 100]).range([12, HEIGHT - 24])
-    const line = d3.line().x((point) => x(point[0])).y((point) => y(point[1])).curve(d3.curveLinearClosed)
+    const x = d3.scaleLinear().domain([0, windowDays]).range([MARGIN.left, WIDTH - MARGIN.right])
+    const y = d3.scaleLinear().domain([0, 100]).range([HEIGHT - MARGIN.bottom, MARGIN.top])
 
-    svg.append('path').attr('class', 'aircraft-outline').attr('d', line(OUTLINE))
-    const zones = svg.append('g').attr('class', 'aircraft-zones')
-    zones.append('ellipse').attr('class', 'critical-zone cockpit').attr('cx', x(50)).attr('cy', y(20)).attr('rx', x(55.5) - x(50)).attr('ry', y(30) - y(20))
-    ;[[34, 51], [66, 51]].forEach(([cx, cy]) => zones.append('ellipse').attr('class', 'critical-zone engine').attr('cx', x(cx)).attr('cy', y(cy)).attr('rx', x(cx + 6.5) - x(cx)).attr('ry', y(cy + 10) - y(cy)))
+    svg.append('defs').append('clipPath').attr('id', 'housing-clip')
+      .append('rect').attr('x', MARGIN.left).attr('y', MARGIN.top)
+      .attr('width', WIDTH - MARGIN.left - MARGIN.right).attr('height', HEIGHT - MARGIN.top - MARGIN.bottom)
+    const grid = svg.append('g').attr('class', 'simpson-grid')
+    grid.selectAll('line.horizontal').data(y.ticks(5)).join('line')
+      .attr('x1', MARGIN.left).attr('x2', WIDTH - MARGIN.right).attr('y1', (value) => y(value)).attr('y2', (value) => y(value))
+    grid.selectAll('line.vertical').data(x.ticks(5)).join('line')
+      .attr('y1', MARGIN.top).attr('y2', HEIGHT - MARGIN.bottom).attr('x1', (value) => x(value)).attr('x2', (value) => x(value))
+    svg.append('g').attr('class', 'simpson-axis').attr('transform', `translate(0,${HEIGHT - MARGIN.bottom})`).call(d3.axisBottom(x).ticks(5))
+    svg.append('g').attr('class', 'simpson-axis').attr('transform', `translate(${MARGIN.left},0)`).call(d3.axisLeft(y).ticks(5))
+    svg.append('text').attr('class', 'axis-label').attr('x', (MARGIN.left + WIDTH - MARGIN.right) / 2).attr('y', HEIGHT - 4).attr('text-anchor', 'middle').text('Days since listing')
+    svg.append('text').attr('class', 'axis-label').attr('transform', `translate(10,${(MARGIN.top + HEIGHT - MARGIN.bottom) / 2}) rotate(-90)`).attr('text-anchor', 'middle').text('House quality')
 
-    svg.append('text').attr('class', 'aircraft-label').attr('x', x(50)).attr('y', y(20)).text('cockpit')
-    svg.append('text').attr('class', 'aircraft-label').attr('x', x(34)).attr('y', y(51)).text('engine')
-    svg.append('text').attr('class', 'aircraft-label').attr('x', x(66)).attr('y', y(51)).text('engine')
+    const plot = svg.append('g').attr('clip-path', 'url(#housing-clip)')
+    plot.selectAll('path.house-point').data(visible).join('path')
+      .attr('class', (house) => `house-point ${house.active ? 'active' : 'sold'} ${house.good ? 'good' : 'bad'}`)
+      .attr('d', (house) => d3.symbol().type(house.good ? d3.symbolSquare : d3.symbolTriangle).size(market.length > 700 ? 10 : 15)())
+      .attr('transform', (house) => `translate(${x(house.age)},${y(house.quality)})`)
 
-    svg.append('g').attr('class', 'aircraft-hit-layer').selectAll('circle').data(visibleHits).join('circle')
-      .attr('class', (hit) => view === 'all' && crashedIds.has(hit.plane) ? `ghost-hit${hit.fatal ? ' fatal' : ''}` : 'survivor-hit')
-      .attr('cx', (hit) => x(hit.x)).attr('cy', (hit) => y(hit.y))
-      .attr('r', mission.hits.length > 3500 ? 1.15 : mission.hits.length > 1800 ? 1.35 : 1.65)
-  }, [crashedIds, mission, view, visibleHits])
+    const line = view === 'active' ? activeLine : flowLine
+    plot.append('line').attr('class', `housing-trend ${view}`)
+      .attr('x1', x(0)).attr('x2', x(windowDays))
+      .attr('y1', y(line.intercept)).attr('y2', y(line.intercept + line.slope * windowDays))
+  }, [activeLine, flowLine, market.length, view, visible, windowDays])
 
-  function runMission() {
-    setMission(simulateMission(holes, engineFragility, bodyFragility))
-    setView('survivors')
+  function rerun() {
+    setMarket(makeMarket(settings))
+    setView('active')
   }
 
   return (
     <section className="demo-page">
-      <DemoIntro wiki="https://en.wikipedia.org/wiki/Survivorship_bias">Survivorship bias occurs when analysis includes successful cases but omits failures that are no longer observable. During World War II, damage on returning aircraft seemed to show that wings and tails needed more armor. Abraham Wald recognized that these planes returned precisely because those areas could tolerate damage. The missing aircraft implied that apparently untouched engines and cockpits were the places where armor mattered most.</DemoIntro>
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Survivorship_bias">Survivorship bias appears when the cases still visible after a filtering process are mistaken for the complete population. In a fast housing market, desirable homes leave the active listings quickly while less desirable homes accumulate. A buyer browsing today therefore sees the market’s leftovers rather than its true flow. Restoring sold listings reveals that good homes were not absent—they were disappearing faster.</DemoIntro>
 
       <div className="demo-stage">
-        <div className="automaton-tabs survivor-tabs" role="group" aria-label="Aircraft evidence view">
-          <button className={view === 'survivors' ? 'active' : ''} onClick={() => setView('survivors')}>Survivors</button>
-          <button className={view === 'all' ? 'active' : ''} onClick={() => setView('all')}>All planes</button>
+        <div className="automaton-tabs survivor-tabs" role="group" aria-label="Housing market evidence view">
+          <button className={view === 'active' ? 'active' : ''} onClick={() => setView('active')}>Active listings</button>
+          <button className={view === 'flow' ? 'active' : ''} onClick={() => setView('flow')}>Market flow</button>
         </div>
-        <div className="chart-card aircraft-chart-card">
-          <svg ref={svgRef} id="aircraft-board" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-label="Top-down aircraft showing bullet damage on surviving or all simulated planes" />
-          <div className="stone-legend">{view === 'survivors' ? <span><i className="legend-dot aircraft-survivor" />Holes on returning planes</span> : <><span><i className="legend-dot aircraft-survivor" />Returning-plane holes</span><span><i className="legend-dot aircraft-ghost" />Lost-plane ghost data</span></>}</div>
+        <div className="chart-card housing-chart-card">
+          <svg ref={svgRef} id="housing-board" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-label="Housing listings scatter plot showing active listings or the full market flow" />
+          <div className="stone-legend">{view === 'active' ? <><span><i className="legend-house active-good" />Active good</span><span><i className="legend-house active-bad" />Active lower-quality</span></> : <><span><i className="legend-house active-good" />Still active</span><span><i className="legend-house sold-good" />Sold ghost data</span></>}</div>
         </div>
 
         <div className="stone-formulas">
-          <div><span className="formula-kicker">Plane survival</span><span className="stone-formula">P(S | n<span className="exp">A</span>, n<span className="exp">B</span>) = (1−f<span className="exp">A</span>)<span className="exp">nA</span>(1−f<span className="exp">B</span>)<span className="exp">nB</span></span></div>
-          <div><span className="formula-kicker">Observed evidence</span><span className="stone-formula">P(hit zone | S)</span></div>
+          <div><span className="formula-kicker">Time on market</span><span className="stone-formula">T ∼ Exp(λ), λ = 1 / μ</span></div>
+          <div><span className="formula-kicker">Still active at age a</span><span className="stone-formula">P(T ≥ a) = e<span className="exp">−a/μ</span></span></div>
         </div>
 
         <div className="readout stone-readout">
-          <div className="cell"><div className="label">Returned / fleet</div><div className="value">{survivors} <span className="theo">/ {FLEET_SIZE}</span></div></div>
-          <div className="cell"><div className="label">Visible holes</div><div className="value">{visibleHits.length.toLocaleString()}</div></div>
-          <div className="cell"><div className="label">Body / critical</div><div className="value">{survivorBodyHits} <span className="theo">/ {survivorCriticalHits}</span></div></div>
+          <div className="cell"><div className="label">Active / sold</div><div className="value">{active.length} <span className="theo">/ {sold.length}</span></div></div>
+          <div className="cell"><div className="label">Good: active / flow</div><div className="value">{(activeGoodRate * 100).toFixed(1)}% <span className="theo">/ {(observedFlowRate * 100).toFixed(1)}%</span></div></div>
+          <div className="cell"><div className="label">Trend slope</div><div className={`value ${((view === 'active' ? activeLine : flowLine).slope < 0) ? 'negative' : 'positive'}`}>{(view === 'active' ? activeLine : flowLine).slope.toFixed(2)}</div></div>
         </div>
 
         <div className="run-row">
-          <button className="btn primary" onClick={runMission}>Simulate mission</button>
+          <button className="btn primary" onClick={rerun}>Simulate market</button>
         </div>
-        <p className={`paradox-status ${view === 'all' ? 'active' : ''}`}>{view === 'survivors' ? 'Returning aircraft suggest armoring the visibly damaged wings and tail.' : 'Ghost data revealed: the clean-looking critical zones were removing aircraft from the observed sample.'}</p>
+        <p className={`paradox-status ${view === 'flow' ? 'active' : ''}`}>{view === 'active' ? `The buyer sees only ${active.length} leftovers; good homes make up ${displayPercent(activeGoodRate)} of them.` : `Ghost listings restored: ${totalGood} good homes entered this market, producing an observed flow rate of ${displayPercent(observedFlowRate)}.`}</p>
       </div>
 
-      <p className="section-label">Mission parameters</p>
-      <Control symbol="N" name="Flak / enemy-fire intensity" value={`${holes.toLocaleString()} holes`} sliderValue={holes} min="100" max="5000" step="100" onChange={(value) => setHoles(Number(value))} />
-      <Control symbol="fₐ" name="Engine and cockpit fragility" value={`${Math.round(engineFragility * 100)}%`} sliderValue={engineFragility} min="0.5" max="1" step="0.01" onChange={(value) => setEngineFragility(Number(value))} />
-      <Control symbol="fᵦ" name="Wing, tail, and fuselage fragility" value={`${Math.round(bodyFragility * 100)}%`} sliderValue={bodyFragility} min="0.01" max="0.2" step="0.01" onChange={(value) => setBodyFragility(Number(value))} />
+      <p className="section-label">Market parameters</p>
+      <Control symbol="θ" name="True share of good houses listed" value={`${Math.round(goodRate * 100)}%`} sliderValue={goodRate} min="0.01" max="0.5" step="0.01" onChange={(value) => setGoodRate(Number(value))} />
+      <Control symbol="μg" name="Average days a good house stays" value={`${goodDays} days`} sliderValue={goodDays} min="1" max="15" step="1" onChange={(value) => setGoodDays(Number(value))} />
+      <Control symbol="μb" name="Average days a lower-quality house stays" value={`${badDays} days`} sliderValue={badDays} min="10" max="60" step="1" onChange={(value) => setBadDays(Number(value))} />
+      <Control symbol="N" name="Market history window" value={`${windowDays} days`} sliderValue={windowDays} min="30" max="180" step="10" onChange={(value) => setWindowDays(Number(value))} />
 
       <ControlGuide items={[
-        { name: 'Fire intensity', text: 'Sets the exact number of randomly positioned hits distributed across a 120-plane mission.' },
-        { name: 'Critical fragility', text: 'Sets the independent fatality probability for every cockpit or engine hit.' },
-        { name: 'Body fragility', text: 'Sets the independent fatality probability for every wing, tail, or fuselage hit.' },
-        { name: 'Evidence view', text: 'Survivors hides every hit from crashed planes; All planes restores those missing observations in red.' },
+        { name: 'Good-house share', text: 'Sets the Bernoulli probability that each of the 500 incoming listings is high quality.' },
+        { name: 'Average market times', text: 'Set the means of the two exponential sale-time distributions; smaller means remove homes faster.' },
+        { name: 'History window', text: 'Changes the period over which listing arrivals are sampled uniformly.' },
+        { name: 'Evidence view', text: 'Active Listings conditions on survival until today; Market Flow restores every sold observation.' },
       ]} />
 
-      <p className="footnote">Each hole is assigned to one aircraft and sampled uniformly from the blueprint silhouette. A plane is lost if any of its hits produces a fatal outcome under that zone’s fragility. The survivor view therefore conditions the observed damage pattern on S = 1—the exact filtering mechanism that creates the bias.</p>
+      <p className="footnote">Every listing receives an independent arrival time, type, quality, and exponentially distributed market duration. A home is active exactly when its sampled duration is at least its current age. Sold homes are plotted at their original age within the history window, allowing the Flow view to show what entered the market rather than only what remained.</p>
     </section>
   )
+}
+
+function displayPercent(value) {
+  return `${(value * 100).toFixed(1)}%`
 }
 
 function Control({ symbol, name, value, sliderValue = value, min, max, step, onChange }) {

@@ -77,8 +77,8 @@ const EXAMPLES = [
   {
     id: 'survivor',
     title: 'Survivorship Bias',
-    blurb: 'This demonstration shows how missing failed cases can make the safest aircraft regions appear to need the most protection.',
-    topics: ['Statistics', 'Bias', 'Probability', 'Engineering'],
+    blurb: 'This demonstration shows how fast-selling good homes vanish from active listings, leaving a misleading market of leftovers.',
+    topics: ['Statistics', 'Bias', 'Probability', 'Real Estate'],
     status: 'ready',
   },
   {
