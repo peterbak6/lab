@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const PIXEL_RATIO = 2
@@ -237,13 +238,14 @@ export default function GameOfLife() {
   }
 
   return (
-    <section>
+    <section className="demo-page">
       <div className="automaton-tabs" role="group" aria-label="Cellular automaton">
         <button className={mode === 'conway' ? 'active' : ''} onClick={() => setMode('conway')}>Conway’s Life</button>
         <button className={mode === 'brain' ? 'active' : ''} onClick={() => setMode('brain')}>Brian’s Brain</button>
       </div>
-      <p className="detail-sub">{mode === 'conway' ? 'Cells live or die using only the eight cells around them. Paint your own seed or load a classic pattern, then watch still lifes, oscillators, and moving gliders emerge.' : 'Three cell states mimic firing neurons and their refractory period. Ready cells fire when exactly two neighbors are firing, producing self-propagating waves and neon circuitry.'}</p>
+      <DemoIntro wiki={mode === 'conway' ? 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life' : 'https://en.wikipedia.org/wiki/Brian%27s_Brain'}>{mode === 'conway' ? 'Conway’s Game of Life is a zero-player cellular automaton whose future is determined entirely by its initial pattern. Each cell reads its eight neighbors and applies simple rules for survival, death, and birth. Those rules produce still lifes, clocks, moving gliders, and structures capable of universal computation. Editing only a few starting cells can radically change the system’s long-term behavior.' : 'Brian’s Brain extends cellular automata with a one-generation refractory state inspired by firing neurons. A ready cell fires only when exactly two neighboring cells are firing, then becomes resting before returning to ready. This forced recovery period prevents immediate reactivation and drives self-propagating wave fronts. Random seeds often organize into spirals, moving structures, and networks that resemble pulsing circuitry.'}</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card life-chart-card">
         <canvas ref={canvasRef} id="life-board" aria-label="Editable Conway's Game of Life grid" onPointerDown={(event) => { drawingRef.current = true; lastPaintedRef.current = -1; event.currentTarget.setPointerCapture(event.pointerId); paint(event, true) }} onPointerMove={(event) => { if (drawingRef.current) paint(event) }} onPointerUp={() => { drawingRef.current = false; lastPaintedRef.current = -1 }} onPointerCancel={() => { drawingRef.current = false; lastPaintedRef.current = -1 }} />
         <div className="stone-legend">{mode === 'conway' ? <><span><i className="legend-dot life-cell" />Surviving cell</span><span><i className="legend-dot life-birth" />New birth</span></> : <><span><i className="legend-dot brain-firing" />Firing</span><span><i className="legend-dot brain-resting" />Resting</span><span><i className="legend-dot brain-ready" />Ready</span></>}</div>
@@ -274,6 +276,7 @@ export default function GameOfLife() {
         <button className="btn ghost" onClick={step} disabled={running}>Step</button>
         <button className="btn ghost" onClick={clear}>Clear</button>
       </div>
+      </div>
 
       <p className="section-label">{mode === 'conway' ? 'Classic patterns' : 'Neural wave seeds'}</p>
       <div className="preset-row">
@@ -285,6 +288,18 @@ export default function GameOfLife() {
       <Control symbol="λ" name="Generations / sec" value={speed} min="1" max="30" step="1" onChange={(value) => setSpeed(Number(value))} />
       <Control symbol="ρ" name="Random fill density" value={`${Math.round(density * 100)}%`} sliderValue={density} min="0.05" max="0.6" step="0.01" onChange={(value) => setDensity(Number(value))} />
       <Control symbol="G" name="Grid size" value={`${gridSize} × ${gridSize}`} sliderValue={gridSize} min="24" max="80" step="8" onChange={(value) => setGridSize(Number(value))} />
+
+      <ControlGuide items={mode === 'conway' ? [
+        { name: 'Pattern presets', text: 'Load a stable block, oscillating blinker, moving glider, or randomized population.' },
+        { name: 'Generation speed', text: 'Changes how quickly the discrete neighbor rules are applied.' },
+        { name: 'Random density', text: 'Controls the initial fraction of living cells when Random is selected.' },
+        { name: 'Grid size', text: 'Changes the available world and cell resolution, then resets the pattern.' },
+      ] : [
+        { name: 'Wave seeds', text: 'Load a compact pulse, a directed firing front, or a randomized firing/resting population.' },
+        { name: 'Generation speed', text: 'Changes how quickly firing cells pass through the refractory cycle.' },
+        { name: 'Random density', text: 'Controls how much of the grid begins in firing or resting states.' },
+        { name: 'Grid size', text: 'Changes the available neural field and resets the current state.' },
+      ]} />
 
       <p className="footnote">{mode === 'conway' ? 'Drag across the grid to paint or erase cells. Conway’s three rules are sufficient for stable blocks, repeating clocks, moving spaceships, and even universal computation.' : 'Brian’s Brain cycles every firing cell through a one-generation refractory state before it becomes ready again. This prevents immediate re-firing and lets electrical-looking wave fronts propagate through the grid.'}</p>
     </section>

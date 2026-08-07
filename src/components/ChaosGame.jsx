@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const PIXEL_RATIO = 2
@@ -170,9 +171,10 @@ export default function ChaosGame() {
   const vertices = makeVertices(vertexCount)
 
   return (
-    <section>
-      <p className="detail-sub">Choose a polygon vertex at random, move partway toward it, and repeat. Changing the polygon, jump distance, or selection rule reveals a surprising family of ordered fractals.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Chaos_game">The chaos game generates fractals by repeatedly applying a randomly selected geometric contraction. A point chooses a polygon vertex, moves a fixed fraction toward it, and becomes the starting point for the next iteration. Although every choice is random, the sequence converges onto a sharply defined mathematical attractor. Changing the polygon, contraction, or vertex restriction reveals different hidden families of self-similar patterns.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card chaos-chart-card">
         <canvas ref={canvasRef} id="chaos-board" aria-label="Chaos Game simulation drawing a Sierpiński triangle from random vertex choices" />
         <div className="chaos-legend">{vertices.map((vertex, index) => <span key={vertex.label}><i style={{ background: vertex.color }} />{vertex.label}: {(counts[index] || 0).toLocaleString()}</span>)}</div>
@@ -194,6 +196,7 @@ export default function ChaosGame() {
         <button className="btn ghost" onClick={() => advance(100)} disabled={running || total >= target}>+100</button>
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
+      </div>
 
       <p className="section-label">Drawing parameters</p>
       <Control symbol="V" name="Vertex count" value={`${SHAPE_NAMES[vertexCount]} (${vertexCount})`} sliderValue={vertexCount} min="3" max="8" step="1" onChange={(value) => setVertexCount(Number(value))} />
@@ -205,6 +208,13 @@ export default function ChaosGame() {
       </label>
       <Control symbol="λ" name="Points / sec" value={speed.toLocaleString()} sliderValue={speed} min="1000" max="100000" step="1000" onChange={(value) => setSpeed(Number(value))} />
       <Control symbol="N" name="Target points" value={target.toLocaleString()} sliderValue={target} min="1000" max="500000" step="1000" onChange={(value) => setTarget(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Vertex count', text: 'Changes the regular polygon and therefore the family of possible attractors.' },
+        { name: 'Jump factor', text: 'Controls the contraction toward each chosen corner; overlap or separation determines whether a clean fractal appears.' },
+        { name: 'Corner restriction', text: 'Removing consecutive repeats changes the symbolic sequence and exposes new internal structure.' },
+        { name: 'Speed and target', text: 'Control how quickly and how densely the attractor is sampled without changing its geometry.' },
+      ]} />
 
       <p className="footnote">With three vertices and a 50% jump, the classic Sierpiński triangle has dimension log(3) / log(2) ≈ 1.585. Other polygons can overlap into a blur at that same jump; changing the contraction or banning repeated corners exposes hidden self-similar structures.</p>
     </section>

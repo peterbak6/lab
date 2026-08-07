@@ -6,71 +6,83 @@ import DrunkardsWalk from './components/DrunkardsWalk.jsx'
 import LangtonsAnt from './components/LangtonsAnt.jsx'
 import GameOfLife from './components/GameOfLife.jsx'
 import ChaosGame from './components/ChaosGame.jsx'
+import SimpsonsParadox from './components/SimpsonsParadox.jsx'
 
 const EXAMPLES = [
   {
     id: 'galton',
     title: 'Galton Board',
-    blurb: 'Drop balls through a peg triangle and watch pure chance build the normal curve, bin by bin.',
+    blurb: 'This demonstration shows how repeated binary choices create a binomial distribution that gradually approaches a bell curve.',
+    topics: ['Probability', 'Distribution', 'Statistics', 'Patterns'],
     status: 'ready',
   },
   {
     id: 'stone',
     title: 'Monte Carlo Method',
-    blurb: 'Throw random points into a circle and estimate π from the ratio that land inside.',
+    blurb: 'This method shows how uniform random sampling estimates π from the proportion of points that land inside a circle.',
+    topics: ['Probability', 'Pi', 'Simulation', 'Geometry'],
     status: 'ready',
   },
   {
     id: 'buffon',
     title: 'Buffon’s Needles',
-    blurb: 'Drop randomly rotated needles across parallel lines and recover π from how often they cross.',
+    blurb: 'This experiment shows how random position and rotation connect geometric probability to an estimate of π.',
+    topics: ['Probability', 'Pi', 'Geometry', 'Mechanics'],
     status: 'ready',
   },
   {
     id: 'walk',
     title: 'The Drunkard’s Walk',
-    blurb: 'Send thousands of walkers from one lamppost and watch chaotic paths form a normal cloud.',
+    blurb: 'This model shows how many independent random steps produce diffusion, predictable distances, and a normal endpoint cloud.',
+    topics: ['Probability', 'Distribution', 'Physics', 'Finance'],
     status: 'ready',
   },
   {
     id: 'langton',
     title: 'Langton’s Ant',
-    blurb: 'Give ants tiny turning rules and watch symmetry collapse into chaos, highways, and shared structures.',
+    blurb: 'This automaton shows how tiny deterministic rules can evolve from symmetry through chaos into a repeating geometric highway.',
+    topics: ['Patterns', 'Emergence', 'Computation'],
     status: 'ready',
   },
   {
     id: 'life',
     title: 'Cellular Automata',
-    blurb: 'Switch between Conway’s Life and Brian’s Brain to explore still lifes, gliders, and neural waves.',
+    blurb: 'These cellular automata show how local neighbor rules create still lifes, moving gliders, oscillators, and neural-like waves.',
+    topics: ['Patterns', 'Emergence', 'Electronics', 'Computation'],
     status: 'ready',
   },
   {
     id: 'chaos',
     title: 'The Chaos Game',
-    blurb: 'Choose polygon vertices at random, adjust the jump, and watch precise fractals emerge from chance.',
+    blurb: 'This method shows how random vertex choices and repeated contraction generate precise self-similar fractal attractors.',
+    topics: ['Fractals', 'Probability', 'Patterns', 'Geometry'],
+    status: 'ready',
+  },
+  {
+    id: 'simpson',
+    title: 'Simpson’s Paradox',
+    blurb: 'This simulator shows how a hidden confounder can reverse a correlation when distinct groups are combined.',
+    topics: ['Statistics', 'Correlation', 'Probability', 'Distribution'],
     status: 'ready',
   },
   {
     id: 'binomial',
     title: 'Binomial Distribution',
     blurb: 'Coin flips and success counts. Coming soon.',
+    topics: ['Probability', 'Distribution'],
     status: 'soon',
   },
   {
     id: 'clt',
     title: 'Central Limit Theorem',
     blurb: 'Watch sample means converge to normal. Coming soon.',
+    topics: ['Distribution', 'Statistics'],
     status: 'soon',
   },
 ]
 
 function CardGlyph({ ready, id }) {
-  if (ready && id === 'stone') return <span className="glyph stone-glyph" aria-hidden="true">π</span>
-  if (ready && id === 'buffon') return <span className="glyph needle-glyph" aria-hidden="true">╱</span>
-  if (ready && id === 'walk') return <span className="glyph walk-glyph" aria-hidden="true">⌁</span>
-  if (ready && id === 'langton') return <span className="glyph ant-glyph" aria-hidden="true">⌗</span>
-  if (ready && id === 'life') return <span className="glyph life-glyph" aria-hidden="true">▦</span>
-  if (ready && id === 'chaos') return <span className="glyph chaos-glyph" aria-hidden="true">△</span>
+  if (ready && id !== 'galton') return <span className={`glyph pattern-glyph pattern-${id}`} aria-hidden="true"><i /><i /><i /><i /><i /></span>
   return ready ? (
     <svg className="glyph" viewBox="0 0 40 30" fill="none" stroke="#14615C" strokeWidth="2" aria-hidden="true">
       <circle cx="20" cy="6" r="1.6" fill="#14615C" stroke="none" />
@@ -98,7 +110,8 @@ function Examples({ onOpen }) {
             disabled={!ready}
           >
             <CardGlyph ready={ready} id={example.id} />
-            <span className="tag">{ready ? 'Interactive' : 'Soon'}</span>
+            <span className="topic-list">{example.topics.map((topic) => <span className="tag" key={topic}>{topic}</span>)}</span>
+            {!ready && <span className="availability">Coming soon</span>}
             <h3>{example.title}</h3>
             <p>{example.blurb}</p>
           </button>
@@ -165,6 +178,8 @@ export default function App() {
         <GameOfLife />
       ) : activeExample === 'chaos' ? (
         <ChaosGame />
+      ) : activeExample === 'simpson' ? (
+        <SimpsonsParadox />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}

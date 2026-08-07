@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const ROW_DURATION = 150
 const BIN_DROP_DURATION = 180
@@ -207,9 +208,10 @@ export default function GaltonBoard() {
     : null
 
   return (
-    <section>
-      <p className="detail-sub">Each ball bounces off a row of pegs, going right with probability p at every peg. Drop enough of them and the bins fill in to trace out a normal curve.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Galton_board">A Galton board turns a sequence of left-or-right collisions into a visible probability distribution. Each ball follows an unpredictable path, yet the collection of many paths settles into stable bin frequencies. With equal bounce probability those frequencies form a symmetric binomial distribution that approaches a normal curve as the number of rows grows. Biasing the probability shifts and skews the emerging pattern.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card">
         <svg ref={svgRef} id="board" viewBox="0 0 320 390" preserveAspectRatio="xMidYMid meet" aria-label="Animated Galton board simulation" />
       </div>
@@ -228,11 +230,18 @@ export default function GaltonBoard() {
         <button className="btn primary" onClick={() => setRunning((value) => !value)}>{running ? 'Pause' : 'Start'}</button>
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
+      </div>
 
       <p className="section-label">Board parameters</p>
       <Control symbol="R" name="Peg rows" value={rows} min="4" max="16" step="1" onChange={(value) => setRows(Number(value))} />
       <Control symbol="p" name="Right-bounce probability" value={probability.toFixed(2)} sliderValue={probability} min="0.1" max="0.9" step="0.05" onChange={(value) => setProbability(Number(value))} />
       <Control symbol="λ" name="Drop speed (balls / sec)" value={speed} min="1" max="40" step="1" onChange={(value) => setSpeed(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Peg rows', text: 'Adds more binary decisions, increasing the number of bins and making the distribution smoother.' },
+        { name: 'Bounce probability', text: 'Moves probability toward the left or right, shifting the mean and introducing skew.' },
+        { name: 'Drop speed', text: 'Changes only the animation rate; it does not change the underlying distribution.' },
+      ]} />
 
       <p className="footnote">Changing peg rows or the bounce probability resets the board, since they change the shape of the distribution. Drop speed can be adjusted at any time. With p = 0.5 the result approximates a normal curve centered at R/2; skew p away from 0.5 to shift the mean and watch the curve tilt.</p>
     </section>

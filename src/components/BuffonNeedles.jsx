@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const LINE_SPACING = 64
@@ -105,9 +106,10 @@ export default function BuffonNeedles() {
   const error = piEstimate === null ? null : Math.abs(piEstimate - Math.PI)
 
   return (
-    <section>
-      <p className="detail-sub">Drop randomly oriented needles onto parallel floorboards. The proportion that crosses a line encodes π through the geometry of rotation.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Buffon%27s_needle_problem">Buffon’s needle is one of the earliest problems in geometric probability. A needle is dropped with random position and orientation across equally spaced parallel lines. Its chance of crossing a line depends on both its length and the circular geometry of its angle. Repeating the experiment turns that crossing frequency into a Monte Carlo estimate of π.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card needle-chart-card">
         <svg ref={svgRef} id="needle-board" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-label="Buffon's needle simulation with randomly dropped needles and parallel lines" />
         <div className="stone-legend">
@@ -131,11 +133,18 @@ export default function BuffonNeedles() {
         <button className="btn primary" onClick={() => setRunning((value) => !value)} disabled={total >= target}>{running ? 'Pause' : total >= target ? 'Complete' : 'Start'}</button>
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
+      </div>
 
       <p className="section-label">Experiment parameters</p>
       <Control symbol="L/D" name="Needle length / line spacing" value={ratio.toFixed(2)} sliderValue={ratio} min="0.2" max="1" step="0.05" onChange={(value) => setRatio(Number(value))} />
       <Control symbol="λ" name="Drop speed (needles / sec)" value={speed} min="10" max="150" step="10" onChange={(value) => setSpeed(Number(value))} />
       <Control symbol="N" name="Target drops" value={target} min="100" max="5000" step="100" onChange={(value) => setTarget(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Needle length / spacing', text: 'Longer needles cross more often; changing this ratio also changes the theoretical probability.' },
+        { name: 'Drop speed', text: 'Changes how quickly trials accumulate but leaves the random geometry unchanged.' },
+        { name: 'Target drops', text: 'Sets the sample size used by the crossing-rate estimate of π.' },
+      ]} />
 
       <p className="footnote">For L ≤ D, the theoretical crossing probability is {probability.toFixed(4)} at the current length ratio. The observed rate is {observedProbability === null ? 'not available yet' : observedProbability.toFixed(4)}. More drops generally move the estimate toward π.{error === null ? '' : ` Current absolute error: ${error.toFixed(5)}.`}</p>
     </section>

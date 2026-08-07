@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const MARGIN = 16
@@ -147,9 +148,10 @@ export default function DrunkardsWalk() {
   const theoreticalMean = Math.sqrt(Math.PI * steps) / 2
 
   return (
-    <section>
-      <p className="detail-sub">Every walker begins at the lamppost and takes equally likely steps north, south, east, or west. One path is chaotic; thousands of endpoints form a predictable normal cloud.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Random_walk">A random walk builds a path from independent steps chosen from a probability rule. Every walker here starts at the same origin and moves north, south, east, or west with equal likelihood. One trajectory looks irregular and unpredictable, while thousands of endpoints form an increasingly smooth normal cloud. The characteristic displacement grows with the square root of the number of steps rather than in direct proportion to it.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card walk-chart-card">
         <svg ref={svgRef} id="walk-board" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-label="Random walk paths and endpoint distribution around the origin" />
         <div className="stone-legend">
@@ -174,11 +176,18 @@ export default function DrunkardsWalk() {
         <button className="btn primary" onClick={() => setRunning((value) => !value)} disabled={walkers >= target}>{running ? 'Pause' : walkers >= target ? 'Complete' : 'Start'}</button>
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
+      </div>
 
       <p className="section-label">Walk parameters</p>
       <Control symbol="N" name="Steps per walker" value={steps} min="10" max="500" step="10" onChange={(value) => setSteps(Number(value))} />
       <Control symbol="λ" name="Walkers simulated / sec" value={speed} min="5" max="100" step="5" onChange={(value) => setSpeed(Number(value))} />
       <Control symbol="W" name="Target walkers" value={target} min="100" max="10000" step="100" onChange={(value) => setTarget(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Steps per walker', text: 'Lengthens every path and expands the endpoint cloud with a characteristic radius proportional to √N.' },
+        { name: 'Simulation speed', text: 'Controls how quickly independent walkers are added to the cloud.' },
+        { name: 'Target walkers', text: 'Sets the ensemble size; more endpoints make the underlying normal distribution easier to see.' },
+      ]} />
 
       <p className="footnote">The dashed ring marks the exact root-mean-square distance √N. The ordinary mean straight-line distance approaches √(πN)/2 ≈ 0.886√N for large N. Each coordinate independently approaches a bell curve as the number of steps grows.</p>
     </section>

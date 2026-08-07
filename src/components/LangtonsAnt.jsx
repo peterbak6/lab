@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const PIXEL_RATIO = 2
@@ -229,9 +230,10 @@ export default function LangtonsAnt() {
   }
 
   return (
-    <section>
-      <p className="detail-sub">An ant reads a grid square, turns according to a tiny rule, advances its color, and moves forward. Simple local instructions produce symmetry, chaos, and—under the classic RL rule—a permanent highway.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Langton%27s_ant">Langton’s ant is a deterministic grid machine whose tiny local rule produces unexpectedly complex global behavior. The classic ant first draws small symmetric motifs, then wanders through a long chaotic phase. Around ten thousand steps it abruptly locks into a repeating 104-step diagonal highway. Longer cyclic rules and multiple ants transform the same mechanism into generalized turmites that paint very different structures.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card ant-chart-card">
         <canvas ref={canvasRef} id="ant-board" aria-label="Langton's Ant cellular automaton simulation" />
         <div className="ant-phase"><span>Current behavior</span><strong>{phase}</strong></div>
@@ -253,6 +255,7 @@ export default function LangtonsAnt() {
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
       {checkpointPaused && <p className="checkpoint-note">10,000-generation checkpoint reached. Inspect the transition, then continue.</p>}
+      </div>
 
       <p className="section-label">Automaton rules</p>
       <label className="text-control">
@@ -266,6 +269,13 @@ export default function LangtonsAnt() {
       </label>
       <Control symbol="A" name="Ants" value={antCount} min="1" max="8" step="1" onChange={(value) => setAntCount(Number(value))} />
       <Control symbol="λ" name="Generations / sec" value={speed.toLocaleString()} sliderValue={speed} min="100" max="20000" step="100" onChange={(value) => setSpeed(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Rule string', text: 'Assigns a left or right turn to each cyclic cell color; changing it creates a different turmite.' },
+        { name: 'Color scale', text: 'Changes only how cell ages are encoded visually, not how the ant moves.' },
+        { name: 'Ants', text: 'Adds independent processors that share and overwrite the same grid memory.' },
+        { name: 'Generation speed', text: 'Controls computation rate so early symmetry or long-term structures can be inspected.' },
+      ]} />
 
       <p className="footnote">With one ant and rule RL, the first few hundred generations are symmetric, the middle thousands are chaotic, and near generation 10,000 a repeating 104-step highway emerges. Longer rule strings create generalized “turmites”; multiple ants independently read and rewrite the same grid.</p>
     </section>

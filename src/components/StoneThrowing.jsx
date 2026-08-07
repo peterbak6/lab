@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { ControlGuide, DemoIntro } from './DemoText.jsx'
 
 const SIZE = 320
 const MARGIN = 16
@@ -98,9 +99,10 @@ export default function StoneThrowing() {
   const error = piEstimate === null ? null : Math.abs(piEstimate - Math.PI)
 
   return (
-    <section>
-      <p className="detail-sub">Throw stones randomly into a square containing a perfect circle. The fraction that lands inside the circle reveals π through geometry and probability.</p>
+    <section className="demo-page">
+      <DemoIntro wiki="https://en.wikipedia.org/wiki/Monte_Carlo_method">Monte Carlo methods use repeated random samples to estimate quantities that may be difficult to compute directly. Here, uniformly thrown points cover a square containing an inscribed circle. The fraction inside the circle estimates the ratio of their areas, π/4. As the sample grows, random fluctuations shrink and the estimate tends to settle near π.</DemoIntro>
 
+      <div className="demo-stage">
       <div className="chart-card stone-chart-card">
         <svg ref={svgRef} id="stone-board" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" aria-label="Monte Carlo simulation of random stones landing inside and outside a circle" />
         <div className="stone-legend">
@@ -124,10 +126,16 @@ export default function StoneThrowing() {
         <button className="btn primary" onClick={() => setRunning((value) => !value)} disabled={total >= target}>{running ? 'Pause' : total >= target ? 'Complete' : 'Start'}</button>
         <button className="btn ghost" onClick={reset}>Reset</button>
       </div>
+      </div>
 
       <p className="section-label">Simulation parameters</p>
       <Control symbol="λ" name="Throw speed (stones / sec)" value={speed} min="10" max="200" step="10" onChange={(value) => setSpeed(Number(value))} />
       <Control symbol="N" name="Target stones" value={target} min="100" max="5000" step="100" onChange={(value) => setTarget(Number(value))} />
+
+      <ControlGuide items={[
+        { name: 'Throw speed', text: 'Controls how quickly new random points appear without changing their spatial probability.' },
+        { name: 'Target stones', text: 'Sets the sample size; larger samples usually reduce the visible error in the π estimate.' },
+      ]} />
 
       <p className="footnote">The square has area 4r² and the circle has area πr², so a uniformly random stone lands inside with probability π/4. The estimate converges toward π as the number of throws grows.{error === null ? '' : ` Current absolute error: ${error.toFixed(5)}.`}</p>
     </section>
