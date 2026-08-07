@@ -46,7 +46,6 @@ button, input { font:inherit; }
 .ant-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:25px; line-height:1; }
 .life-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:24px; line-height:1; }
 .chaos-glyph { display:grid; place-items:center; color:var(--teal); font-family:'Fraunces',serif; font-size:28px; line-height:1; }
-.sand-glyph { display:grid; place-items:center; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:25px; line-height:1; }
 .detail-sub { font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; max-width:46ch; }
 .chart-card { background:var(--card); border:1px solid var(--line-strong); border-radius:var(--radius); padding:10px 8px 4px; box-shadow:var(--shadow); margin-bottom:4px; }
 #board { width:100%; height:auto; display:block; border-radius:8px; }
@@ -195,11 +194,3 @@ input[type='range']::-moz-range-thumb { width:16px; height:16px; border-radius:5
 .toggle-control input:checked + i { background:var(--teal); }
 .toggle-control input:checked + i::after { transform:translateX(16px); }
 .toggle-control input:focus-visible + i { box-shadow:0 0 0 3px var(--teal-soft); }
-
-/* --- Abelian Sandpile --- */
-.sand-chart-card { padding:10px 10px 5px; }
-#sand-board { display:block; width:100%; height:auto; aspect-ratio:1; border-radius:8px; image-rendering:auto; }
-.sand-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 13px; padding:6px 0 4px; font-family:'IBM Plex Mono',monospace; font-size:7.5px; color:var(--ink-faint); }
-.sand-legend span { display:inline-flex; align-items:center; gap:4px; }
-.sand-legend i { width:8px; height:8px; border:1px solid var(--line-strong); border-radius:2px; }
-.sand-status { font-size:8.5px !important; line-height:1.2; }
