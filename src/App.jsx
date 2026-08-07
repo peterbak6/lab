@@ -7,6 +7,7 @@ import LangtonsAnt from './components/LangtonsAnt.jsx'
 import GameOfLife from './components/GameOfLife.jsx'
 import ChaosGame from './components/ChaosGame.jsx'
 import SimpsonsParadox from './components/SimpsonsParadox.jsx'
+import BerksonsParadox from './components/BerksonsParadox.jsx'
 
 const EXAMPLES = [
   {
@@ -63,6 +64,13 @@ const EXAMPLES = [
     title: 'Simpson’s Paradox',
     blurb: 'This simulator shows how a hidden confounder can reverse a correlation when distinct groups are combined.',
     topics: ['Statistics', 'Correlation', 'Probability', 'Distribution'],
+    status: 'ready',
+  },
+  {
+    id: 'berkson',
+    title: 'Berkson’s Paradox',
+    blurb: 'This demonstration shows how selecting on a shared outcome creates a false negative correlation between independent traits.',
+    topics: ['Statistics', 'Correlation', 'Bias', 'Probability'],
     status: 'ready',
   },
   {
@@ -180,6 +188,8 @@ export default function App() {
         <ChaosGame />
       ) : activeExample === 'simpson' ? (
         <SimpsonsParadox />
+      ) : activeExample === 'berkson' ? (
+        <BerksonsParadox />
       ) : (
         <Examples onOpen={setActiveExample} />
       )}

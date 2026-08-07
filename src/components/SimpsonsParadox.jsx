@@ -60,7 +60,6 @@ export default function SimpsonsParadox() {
   const [hardN, setHardN] = useState(DEFAULTS.hardN)
   const [hardP, setHardP] = useState(DEFAULTS.hardP)
   const [difficultyRatio, setDifficultyRatio] = useState(DEFAULTS.difficultyRatio)
-  const [mode, setMode] = useState('separate')
   const [dataset, setDataset] = useState(() => generateParadox(DEFAULTS))
 
   const settings = useMemo(() => ({ easyN, easyP, hardN, hardP, difficultyRatio }), [difficultyRatio, easyN, easyP, hardN, hardP])
@@ -94,19 +93,17 @@ export default function SimpsonsParadox() {
     plot.selectAll('circle').data(points).join('circle')
       .attr('cx', (point) => xScale(point.x)).attr('cy', (point) => yScale(point.y))
       .attr('r', points.length > 250 ? 1.7 : 2.25)
-      .attr('fill', (point) => mode === 'separate' ? (point.group === 'easy' ? EASY_COLOR : HARD_COLOR) : '#7C8982')
-      .attr('opacity', mode === 'separate' ? 0.72 : 0.5)
+      .attr('fill', (point) => point.group === 'easy' ? EASY_COLOR : HARD_COLOR)
+      .attr('opacity', 0.72)
       .attr('stroke', (point) => point.passed ? 'none' : '#fff').attr('stroke-width', 0.7)
 
     const combinedTrend = { ...dataset.combinedLine, color: '#888', combined: true }
-    const lines = mode === 'separate'
-      ? [combinedTrend, { ...dataset.easyLine, color: EASY_COLOR }, { ...dataset.hardLine, color: HARD_COLOR }]
-      : [combinedTrend]
+    const lines = [combinedTrend, { ...dataset.easyLine, color: EASY_COLOR }, { ...dataset.hardLine, color: HARD_COLOR }]
     plot.selectAll('line.trend').data(lines).join('line')
       .attr('class', (line) => `trend${line.combined ? ' combined-trend' : ''}`).attr('x1', xScale(0)).attr('x2', xScale(20))
       .attr('y1', (line) => yScale(line.intercept)).attr('y2', (line) => yScale(line.intercept + line.slope * 20))
       .attr('stroke', (line) => line.color)
-  }, [dataset, mode])
+  }, [dataset])
 
   const paradoxActive = dataset.easyLine.slope > 0 && dataset.hardLine.slope > 0 && dataset.combinedLine.slope < 0
 
@@ -114,7 +111,6 @@ export default function SimpsonsParadox() {
     const alreadyDefault = easyN === DEFAULTS.easyN && easyP === DEFAULTS.easyP && hardN === DEFAULTS.hardN && hardP === DEFAULTS.hardP && difficultyRatio === DEFAULTS.difficultyRatio
     setEasyN(DEFAULTS.easyN); setEasyP(DEFAULTS.easyP); setHardN(DEFAULTS.hardN); setHardP(DEFAULTS.hardP)
     setDifficultyRatio(DEFAULTS.difficultyRatio)
-    setMode('separate')
     if (alreadyDefault) setDataset(generateParadox(DEFAULTS))
   }
 
@@ -123,13 +119,9 @@ export default function SimpsonsParadox() {
       <DemoIntro wiki="https://en.wikipedia.org/wiki/Simpson%27s_paradox">Simpson’s paradox occurs when a trend visible inside several groups disappears or reverses after those groups are combined. In this simulation, study time raises scores within both easy and hard exams. Exam difficulty is the hidden confounder: students taking the harder exam study more but still tend to score lower. Hiding that variable creates a misleading downward global correlation even though both conditional relationships point upward.</DemoIntro>
 
       <div className="demo-stage">
-        <div className="automaton-tabs simpson-tabs" role="group" aria-label="Correlation view">
-          <button className={mode === 'separate' ? 'active' : ''} onClick={() => setMode('separate')}>View separately</button>
-          <button className={mode === 'combined' ? 'active' : ''} onClick={() => setMode('combined')}>Combine groups</button>
-        </div>
         <div className="chart-card simpson-chart-card">
           <svg ref={svgRef} id="simpson-board" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-label="Scatter plot showing Simpson's paradox in easy and hard exam groups" />
-          <div className="stone-legend">{mode === 'separate' ? <><span><i className="legend-dot simpson-easy" />Exam 1</span><span><i className="legend-dot simpson-hard" />Exam 2</span><span><i className="legend-line simpson-combined" />All students</span></> : <span><i className="legend-line simpson-combined" />All students · difficulty hidden</span>}</div>
+          <div className="stone-legend"><span><i className="legend-dot simpson-easy" />Exam 1</span><span><i className="legend-dot simpson-hard" />Exam 2</span><span><i className="legend-line simpson-combined" />All students</span></div>
         </div>
 
         <div className="stone-formulas">
@@ -165,8 +157,7 @@ export default function SimpsonsParadox() {
         { name: 'Difficulty ratio', text: 'At 0.50 both exams are equal. Moving toward 1 makes Exam 2 harder; moving toward 0 makes Exam 1 harder.' },
         { name: 'Population sizes', text: 'Change how strongly each difficulty group influences the combined regression.' },
         { name: 'Pass probabilities', text: 'Shift students between the lower and higher study-hour bands inside each exam.' },
-        { name: 'View separately', text: 'Preserves the confounder and fits one positive trendline within each difficulty level.' },
-        { name: 'Combine groups', text: 'Hides exam difficulty and fits one global line, exposing the possible sign reversal.' },
+        { name: 'Trendlines', text: 'The solid lines fit each exam separately; the dotted grey line fits every student while ignoring difficulty.' },
       ]} />
 
       <p className="footnote">The corrected generator deliberately associates easier exams with fewer study hours and higher score baselines, while harder exams require more study but retain lower baselines. This negative between-group relationship can dominate the positive within-group relationships when difficulty is omitted.</p>
