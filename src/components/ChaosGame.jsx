@@ -21,10 +21,11 @@ function makeVertices(count) {
   })
 }
 
-function phaseFor(points) {
+function phaseFor(points, vertexCount, jumpFactor, restrictRepeat) {
   if (points < 100) return 'Random sketch'
   if (points < 2000) return 'Structure emerging'
-  return 'Sierpiński fractal'
+  if (vertexCount === 3 && Math.abs(jumpFactor - 0.5) < 0.002 && !restrictRepeat) return 'Sierpiński triangle'
+  return restrictRepeat ? 'Restricted attractor' : 'Polygon attractor'
 }
 
 export default function ChaosGame() {
@@ -167,7 +168,7 @@ export default function ChaosGame() {
 
   useEffect(() => () => stop(), [stop])
 
-  const phase = phaseFor(total)
+  const phase = phaseFor(total, vertexCount, jumpFactor, restrictRepeat)
   const vertices = makeVertices(vertexCount)
 
   return (
@@ -181,7 +182,7 @@ export default function ChaosGame() {
       </div>
 
       <div className="stone-formulas">
-        <div><span className="formula-kicker">Random choice</span><span className="stone-formula">P(V<span className="exp">i</span>) = 1 / {vertexCount}</span></div>
+        <div><span className="formula-kicker">Random choice</span><span className="stone-formula">{restrictRepeat ? <>P(V<span className="exp">i</span> | V<span className="exp">i</span> ≠ V<span className="exp">n−1</span>) = 1 / {vertexCount - 1}</> : <>P(V<span className="exp">i</span>) = 1 / {vertexCount}</>}</span></div>
         <div><span className="formula-kicker">Jump rule</span><span className="stone-formula">P<span className="exp">n+1</span> = (1−j)P<span className="exp">n</span> + jV<span className="exp">i</span></span></div>
       </div>
 

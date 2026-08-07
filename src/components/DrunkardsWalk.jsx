@@ -168,7 +168,7 @@ export default function DrunkardsWalk() {
 
       <div className="readout stone-readout">
         <div className="cell"><div className="label">Walkers</div><div className="value">{walkers}</div></div>
-        <div className="cell"><div className="label">Mean r / theory</div><div className="value">{meanDistance === null ? '–' : meanDistance.toFixed(2)} <span className="theo">/ {theoreticalMean.toFixed(2)}</span></div></div>
+        <div className="cell"><div className="label">Mean r / asymptotic</div><div className="value">{meanDistance === null ? '–' : meanDistance.toFixed(2)} <span className="theo">/ {theoreticalMean.toFixed(2)}</span></div></div>
         <div className="cell"><div className="label">RMS r / √N</div><div className="value">{rmsDistance === null ? '–' : rmsDistance.toFixed(2)} <span className="theo">/ {theoreticalRms.toFixed(2)}</span></div></div>
       </div>
 
